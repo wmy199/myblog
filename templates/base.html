@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    {% block header %}
+
+    {% endblock header %}
+    <header>
+        <div class="box">
+            <a href="{% url 'home' %}">
+                <h1 class="site-title">个人博客网站</h1>
+            </a>
+            <div class="search">
+                <form class="search-form" action="">
+                    <input class="search-keyword" class="" type="text">
+                    <button class="search-submit" type="submit">搜索</button>
+                </form>
+            </div>
+            {% if not user.is_authenticated %}
+            <div class="home-login" id='home-login'>
+                login
+            </div>
+            {% else %}
+            <a href="{% url 'logout' %}">
+                <div class="logout">
+                    logout
+                </div>
+            </a>
+            {% endif %}
+        </div>
+
+    </header>
+    {% if not user.is_authenticated  %}
+    <div class="login" id="login">
+        <div class="login-close">
+            <span id='login-close'>x</span>
+        </div>
+        <form action="{% url 'login'%}" method="POST">
+            {% csrf_token %}
+            <input class="username" type="text" name="username" value="username">
+            <input class="password" type="password" name="password" value="password">
+            <button class="submit" type="submit">登陆</button>
+            <a href="{% url 'create_account_page' %}" class="create_account">注册</a>
+        </form>
+    </div>
+    {% endif %}
+    <!-- <nav>
+        <ul>
+            <li><a href="1">one</a></li>
+            <li><a href="2">two</a></li>
+            <li><a href="">three</a></li>
+            <li><a href="">four</a></li>
+            <li><a href="">five</a></li>
+            <li><a href="">six</a></li>
+            <li><a href="">seven</a></li>
+            <li><a href="">eight</a></li>
+            <li><a href="">nine</a></li>
+            <li><a href="">ten</a></li>
+        </ul>
+    </nav> -->
+    <div class="container">
+        <div class="contents">
+            {% block content %}
+
+            {% endblock content %}
+        </div>
+    </div>
+
+    {% block css %}
+
+    {% endblock css %}
+
+</body>
+<script>
+
+    {% if not user.is_authenticated %}
+    var home_login = document.getElementById('home-login')
+    var base_login = document.getElementById('login')
+    home_login.onclick = function () {
+        base_login.style.display = 'block';
+    }
+    
+
+
+    var base_login = document.getElementById('login')
+    var login_close = document.getElementById('login-close')
+    login_close.onclick = function () {
+        base_login.style.display = 'none';
+    }
+    {% endif %}
+</script>
+<style>
+    header {
+        margin: 0;
+        padding: 0;
+        margin-bottom: 5px;
+    }
+
+    header .box {
+        width: 1000px;
+        margin: 0px auto;
+        height: 80px;
+        position: relative;
+        border-radius: 10px;
+        background: skyblue;
+        background-size: cover;
+        overflow: hidden;
+    }
+
+    .search {
+        position: absolute;
+        right: 5px;
+        bottom: 5px;
+    }
+
+    .search .search-form {
+        height: 32px;
+        width: 160px;
+
+    }
+
+    .search .search-form .search-keyword {
+        box-sizing: border-box;
+        width: 100px;
+        height: 32px;
+        float: left;
+        border: 0;
+        padding: 0 5px;
+        border-radius: 5px;
+        background-color: rgba(221, 221, 221, 0.801);
+    }
+
+    .search .search-form .search-submit {
+        box-sizing: border-box;
+        width: 40px;
+        padding: 0;
+        border: 0;
+        border-radius: 5px;
+        height: 32px;
+        position: absolute;
+        right: 10px;
+        background-color: rgba(221, 221, 221, 0.801);
+    }
+
+    .search .search-form .search-submit:hover {
+        background-color: black;
+        color: white;
+        cursor: pointer;
+    }
+
+    .home-login {
+        position: absolute;
+        right: 18px;
+        top: 5px;
+        background-color: rgba(221, 221, 221, 0.801);
+        border-radius: 5px;
+        width: auto;
+        height: 18px;
+        text-align: center;
+        padding: 2px;
+        font: 400 13.3333px Arial;
+    }
+
+    .logout {
+        position: absolute;
+        right: 18px;
+        top: 5px;
+        background-color: rgba(221, 221, 221, 0.801);
+        border-radius: 5px;
+        width: auto;
+        height: 18px;
+        text-align: center;
+        padding: 2px;
+        font: 400 13.3333px Arial;
+    }
+
+    .logout:hover {
+        cursor: pointer;
+        background-color: black;
+        color: white;
+    }
+
+    .home-login:hover {
+        cursor: pointer;
+        background-color: black;
+        color: white;
+    }
+
+    .site-title {
+        margin: 0;
+        line-height: 80px;
+        margin-left: 10px;
+        display: inline-block;
+    }
+
+    .login {
+        display: none;
+        position: absolute;
+        width: 250px;
+        height: 120px;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        background-color: rgb(255, 255, 255);
+        border-radius: 5px;
+        box-shadow: 0px 0px 4px 0px;
+        padding: 5px;
+        z-index: 100;
+    }
+
+    .login .username {
+        width: 200px;
+        margin: 5px auto 5px;
+        border: 1px solid black;
+        background-color: transparent;
+        border-radius: 5px;
+        height: 20px;
+        display: block;
+    }
+
+    .login .password {
+        width: 200px;
+        margin: 0 auto;
+        border: 1px solid black;
+        background-color: transparent;
+        border-radius: 5px;
+        height: 20px;
+        display: block;
+    }
+
+    .login .submit {
+        margin: 5px;
+        margin-right: 23px;
+        border: 1px solid black;
+        border-radius: 5px;
+        height: 25px;
+        float: right;
+    }
+
+    .login .login-close {
+        text-align: right;
+        margin: 0 10px;
+    }
+
+    .login .login-close span:hover {
+        cursor: pointer;
+        background-color: rgba(158, 158, 158, 0.667);
+    }
+
+    .create_account {
+        float: left;
+        margin: 6px;
+        margin-left: 23px;
+        background-color: #dddddd;
+        border: 1px solid;
+        border-radius: 5px;
+        height: 25px;
+        box-sizing: border-box;
+        padding: 1px;
+    }
+
+    nav {}
+
+    nav ul {
+        overflow: hidden;
+        width: 1000px;
+        margin: 5px auto;
+        list-style-type: none;
+        background-color: skyblue;
+        padding: 0;
+        border-radius: 5px;
+    }
+
+    nav ul li {
+        float: left;
+        box-sizing: border-box;
+        width: 10%;
+
+    }
+
+    nav ul li a {
+        color: black;
+        line-height: 30px;
+        display: block;
+        line-height: 30px;
+        font-weight: 900;
+        text-align: center;
+    }
+
+    nav ul li a:hover {
+        background-color: black;
+        color: white;
+    }
+
+    .contents {
+        width: 1000px;
+        margin: 0 auto;
+        background-color: rgba(255, 255, 255, 0.7);
+        border-radius: 5px;
+        box-shadow: 0px 0px 3px 0px;
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
+
+
+
+    body {
+        margin: 0;
+        padding: 0;
+        background-color: #fbfaf9;
+    }
+
+    div {
+        margin: 0;
+        padding: 0;
+    }
+
+    a {
+        text-decoration: none;
+        color: black;
+    }
+
+    hr {
+        color: rgba(236, 236, 236, 0.308);
+    }
+</style>
+
+</html>

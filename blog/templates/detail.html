@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="detail">
+    <h2>
+        {{blog.title}}
+    </h2>
+    <br>
+    <p>作者：<a href="{% url 'blog:user_space' blog.author.pk %}">{{blog.author}}</a> </p>
+    <p>分类：{{blog.blog_type}}</p>
+    <p>发布时间：{{blog.created_time| date:"Y-m-j D H:i:s"}}</p>
+    <br>
+    <p class="detail-content">{{blog.content}}</p>
+</div>
+<div class="comment-aria">
+    <hr>
+    <h3>评论</h3>
+    <form action="{%url 'blog:new_comment' %}" method="POST" class="reply">
+        {% csrf_token %}
+        <textarea name="content" cols="30" rows="10"></textarea>
+        <input type="hidden" name="to_user" value={{blog.author}}>
+        <input type="hidden" name="parent" value="blog">
+        <input type="hidden" name="object_id" value={{blog.pk}}>
+        <input type="submit" style="float:right;">
+    </form>
+    <form action="{%url 'blog:new_comment' %}" method="POST" class="reply" style="display:none;" id="reply">
+        {% csrf_token %}
+        <textarea name="content" cols="30" rows="10"></textarea>
+        <input type="hidden" name="to_user" id="to_user">
+        <input type="hidden" name="parent" value="comment">
+        <input type="hidden" name="object_id" id="id">
+        <input type="submit" style="float:right;">
+    </form>
+    {% for each_comment in blog.comments.all %}
+    <div class="comment">
+        <div class="maincomment">{{each_comment.from_user}}:{{each_comment}}<a href="script:;"
+                data-rid="{{each_comment.from_user}}" data-id={{each_comment.pk}} onclick="reply(this)">回复</a>
+        </div>
+
+        {% for each in each_comment.get_comment.reverse %}
+        <div class="subcomment">{{each.from_user}}
+            &nbsp; 回复 &nbsp; {{each.to_user}}:{{each}}<a href="script:;" data-rid="{{each.from_user}}"
+                data-id={{each_comment.pk}} onclick="reply(this)">回复</a>
+        </div>
+
+        {% endfor %}
+    </div>
+    {% endfor %}
+</div>
+{% endblock content %}
+
+
+{% block header %}
+<script src="{% static 'wangEditor.min.js' %}"></script>
+{% endblock header %}
+
+
+{% block css %}
+<script>
+    var replyarea = document.getElementById('reply');
+    var to_user = document.getElementById('to_user');
+    var id = document.getElementById('id');
+    {% if user.is_authenticated %}
+    function reply(obj) {
+        obj.parentNode.appendChild(replyarea);
+        to_user.value = obj.getAttribute('data-rid');
+        id.value = obj.getAttribute('data-id');
+        replyarea.style.display = 'block';
+    }
+    {% else %}
+    function reply() {
+        let base_login = document.getElementById('login');
+        base_login.style.display = 'block';
+    }
+    {% endif %}
+
+
+</script>
+<style>
+    .reply {
+        overflow: hidden;
+    }
+
+    .reply textarea {
+        width: 100%;
+        box-sizing: border-box;
+        border-radius: 5px;
+    }
+
+    .subcomment {
+        margin-left: 2em;
+        text-align: justify;
+    }
+
+    .comment:not(:last-child) {
+        text-align: justify;
+        border-bottom: 1px solid gainsboro;
+        padding: 10px;
+    }
+    .comment:last-child {
+        text-align: justify;
+        padding: 10px;
+    }
+
+    .comment a {
+        display: inline-block;
+        margin-left: 5%;
+        color: blue;
+    }
+    .comment a:hover{
+        background-color: rgba(150, 149, 148, 0.527);
+    }
+
+    .comment-aria {
+        margin: 10px;
+    }
+
+    .detail {
+        margin: 0;
+        padding: 10px;
+    }
+
+    .detail h2 {
+        text-align: center;
+        margin: 0;
+        padding: 0;
+    }
+
+    .detail p {
+        margin: 0;
+        padding: 0;
+        line-height: 1.5em;
+    }
+
+    .detail p a:hover {
+        background-color: black;
+        color: white;
+    }
+
+    .detail .detail-content {
+        text-indent: 2em;
+        text-align: justify;
+    }
+</style>
+{% endblock css %}
